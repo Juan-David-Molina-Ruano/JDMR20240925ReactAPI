@@ -1,0 +1,1 @@
+import CrearProductoScreem from '@/components/CrearProductoScreem';
