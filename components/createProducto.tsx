@@ -1,78 +1,85 @@
 import React, { useState } from 'react';
-import {View, Text, TextInput, Button, StyleSheet, Alert} from 'react-native';
-import {crearProducto} from '../constants/Servicio';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { crearProducto } from '../constants/Servicio';
 
-const createProducto: React.FC = () => {
+const CreateProducto: React.FC = () => {
     const [producto, setProducto] = useState({
-        nombreJDMR: '',
-        descripcionJDMR: '',
-        precioJDMR: 0,
+        nombre: '',
+        descripcion: '',
+        precio: 0,
     });
 
-    const [Loading, setLoading] = useState(false);
-    const [Error, setError] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = async () => {
         setLoading(true);
-        setError(false);
-        
-        //validar el precio
-        if(producto.precioJDMR <= 0){
+
+        // Validar campos obligatorios
+        if (!producto.nombre.trim() || !producto.descripcion.trim()) {
+            Alert.alert('Todos los campos son obligatorios');
+            setLoading(false);
+            return;
+        }
+
+        // Validar el precio
+        if (producto.precio <= 0) {
             Alert.alert('El precio debe ser mayor a 0');
             setLoading(false);
             return;
         }
 
-        const productSave = {
-            nombre: producto.nombreJDMR,
-            descripcion: producto.descripcionJDMR,
-            precio: producto.precioJDMR,
+        try {
+            const response = await crearProducto(producto);
+            if (response && response.status === 201) { // Asegúrate de que el servidor devuelva un status 201 para creación exitosa
+                Alert.alert('Producto creado con éxito');
+                setProducto({
+                    nombre: '',
+                    descripcion: '',
+                    precio: 0,
+                });
+            } else {
+                Alert.alert('Error al crear el producto');
+            }
+        } catch (error) {
+            Alert.alert('Hubo un error en la creación del producto');
+            console.error(error);
+        } finally {
+            setLoading(false);
         }
-        
-        const response = await crearProducto(productSave);
-        if(response){
-            Alert.alert('Producto creado con éxito');
-            setProducto({
-                nombreJDMR: '',
-                descripcionJDMR: '',
-                precioJDMR: 0,
-            });
-        }else{
-            Alert.alert('Error al crear el producto');
-        }
-
-        setLoading(false);
-    }
+    };
 
     return (
         <View style={styles.container}>
             <Text>Nombre</Text>
             <TextInput
                 style={styles.input}
-                onChangeText={(text) => setProducto({...producto, nombreJDMR: text})}
-                value={producto.nombreJDMR}
+                onChangeText={(text) => setProducto({ ...producto, nombre: text })}
+                value={producto.nombre}
             />
             <Text>Descripción</Text>
             <TextInput
                 style={styles.input}
-                onChangeText={(text) => setProducto({...producto, descripcionJDMR: text})}
-                value={producto.descripcionJDMR}
+                onChangeText={(text) => setProducto({ ...producto, descripcion: text })}
+                value={producto.descripcion}
             />
             <Text>Precio</Text>
             <TextInput
                 style={styles.input}
-                onChangeText={(text) => setProducto({...producto, precioJDMR: Number(text)})}
-                value={producto.precioJDMR.toString()}
+                onChangeText={(text) => {
+                    const numericValue = text.replace(/[^0-9]/g, '');
+                    setProducto({ ...producto, precio: Number(numericValue) });
+                }}
+                value={producto.precio.toString()}
                 keyboardType='numeric'
             />
             <Button
-                title='Crear producto'
+                title={loading ? 'Creando...' : 'Crear producto'}
                 onPress={handleChange}
+                disabled={loading}
             />
         </View>
     );
-
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -89,4 +96,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default createProducto;
+export default CreateProducto;

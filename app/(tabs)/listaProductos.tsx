@@ -1,9 +1,9 @@
-import CreateProducto from '@/components/createProducto';
+import ListProductos from '@/components/listProductos';
 
-const CrearProducto = () => {
+const ListaProductos = () => {  
     return (
         <div style={styles.container}>
-            <CreateProducto />
+            <ListProductos />
         </div>
     );
 }
@@ -16,4 +16,4 @@ const styles = {
     },
 };
 
-export default CrearProducto;
+export default ListaProductos;
