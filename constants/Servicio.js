@@ -9,15 +9,7 @@ const servicio = axios.create({
     },
 });
 
-export const obtenerProductosId = async (id) => {
-    const respuesta = await servicio.get(`/productos/${id}`);
-
-    if (respuesta.status === 200) {
-        return respuesta.data;
-    }else{
-        return console.log('Error al obtener los productos');
-    }
-}
+// Removed duplicate declaration of obtenerProductosId
 
 export const obtenerProductos = async (query) => {
     const respuesta = await servicio.post('/productos/buscar', {
@@ -31,10 +23,10 @@ export const obtenerProductos = async (query) => {
 
     if (respuesta.status === 200) {
         return respuesta.data;
-    }else{
-        return console.log('Error al obtener los productos');
+    } else {
+        console.log('Error al obtener los productos');
+        throw new Error('Error al obtener los productos');
     }
-
 }
 
 export const obtenerTodosProductos = async (query) => {
@@ -53,18 +45,36 @@ export const obtenerTodosProductos = async (query) => {
 }
 
 export const crearProducto = async (producto) => {
-    const respuesta = await servicio.post('/productos',{
-        nombre: producto.nombre,
-        descripcion: producto.descripcion,
-        precio: producto.precio,
-    });
+    try {
+        const respuesta = await servicio.post('/productos', {
+            nombre: producto.nombre,
+            descripcion: producto.descripcion,
+            precio: producto.precio,
+        });
+
+        // Verificar el estado de la respuesta
+        if (respuesta.status === 200 || respuesta.status === 201) {
+            return respuesta.data;  // Devuelve el resultado si fue exitoso
+        } else {
+            console.log('Error al crear el producto');
+            throw new Error('Error al crear el producto');
+        }
+    } catch (error) {
+        console.error('Error en la solicitud:', error);
+        throw error;
+    }
+}
+
+
+export const obtenerProductosId = async (id) => {
+    const respuesta = await servicio.get(`/productos/${id}`);
 
     if (respuesta.status === 200) {
         return respuesta.data;
-    }else{
-        return console.log('Error al crear el producto');
+    } else {
+        console.log('Error al obtener los productos');
+        throw new Error('Error al obtener los productos');
     }
-
 }
 
 export default servicio;
