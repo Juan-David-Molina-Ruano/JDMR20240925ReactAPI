@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 const API_URL = 'https://davidruano.bsite.net/api';
-const API_URL_LOCAL = 'http://localhost:7132';
+const API_URL_LOCAL = 'https://localhost:7132';
 
 const servicio = axios.create({
-    baseURL: API_URL,
+    baseURL: API_URL_LOCAL,
     headers: {
         'Content-Type': 'application/json',
     },
